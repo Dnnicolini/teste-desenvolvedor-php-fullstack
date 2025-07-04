@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\CpfCnpjApiValidation;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSupplierRequest extends FormRequest
 {
@@ -14,9 +15,12 @@ class StoreSupplierRequest extends FormRequest
 
     public function rules(): array
     {
+      
+        $type = $this->input('type');
+
         return [
-            'cpf_cnpj' => ['required', 'string', 'max:14', 'unique:suppliers,cpf_cnpj'],
-            'type' => ['required', Rule::in(['pf', 'pj'])],
+            'type' => ['required', 'in:pf,pj'],
+            'cpf_cnpj' => ['required', 'string', 'max:18', new CpfCnpjApiValidation($type), Rule::unique('suppliers', 'cpf_cnpj')],
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:suppliers,email'],
             'phone' => ['required', 'string'],

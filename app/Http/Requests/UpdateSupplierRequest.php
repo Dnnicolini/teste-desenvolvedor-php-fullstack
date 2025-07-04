@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\CpfCnpjApiValidation;
 
 class UpdateSupplierRequest extends FormRequest
 {
@@ -14,20 +15,19 @@ class UpdateSupplierRequest extends FormRequest
 
     public function rules(): array
     {
+        $type = $this->input('type');
+
         return [
             'cpf_cnpj' => [
                 'required',
                 'string',
-                'max:14',
-                Rule::unique('suppliers', 'cpf_cnpj')->ignore($this->route('supplier')),
+                'max:18', 
+                new CpfCnpjApiValidation($type),
+                Rule::unique('suppliers', 'cpf_cnpj')->ignore($this->supplier),
             ],
             'type' => ['required', Rule::in(['pf', 'pj'])],
             'name' => ['required', 'string'],
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('suppliers', 'email')->ignore($this->route('supplier')),
-            ],
+            'email' => ['required', 'email', Rule::unique('suppliers', 'email')->ignore($this->supplier)],
             'phone' => ['required', 'string'],
             'address' => ['required', 'string'],
             'number' => ['required', 'integer'],
@@ -46,13 +46,13 @@ class UpdateSupplierRequest extends FormRequest
         return [
             'cpf_cnpj.required' => 'The CPF/CNPJ field is required.',
             'cpf_cnpj.unique' => 'The CPF/CNPJ has already been taken.',
-            'cpf_cnpj.max' => 'The CPF/CNPJ must not exceed 14 characters.',
+            'cpf_cnpj.max' => 'The CPF/CNPJ must not exceed 18 characters.',
             'type.required' => 'The type field is required.',
             'type.in' => 'The selected type is invalid.',
             'name.required' => 'The name field is required.',
-            'name.unique' => 'The name has already been taken.',
             'email.required' => 'The email field is required.',
             'email.email' => 'The email must be a valid email address.',
+            'email.unique' => 'The email has already been taken.',
             'phone.required' => 'The phone field is required.',
             'address.required' => 'The address field is required.',
             'number.required' => 'The number field is required.',

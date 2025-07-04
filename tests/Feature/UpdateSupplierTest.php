@@ -8,7 +8,7 @@ use App\Models\Supplier;
 uses(Tests\TestCase::class, RefreshDatabase::class)->in('Feature');
 
 it('updates a supplier successfully', function () {
-    $cpf = Str::random(14);
+    $cpf = '05013154200';
 
     $supplier = Supplier::factory()->create([
         'cpf_cnpj' => $cpf,
